@@ -172,6 +172,49 @@ footer{text-align:center;padding:25px;font-size:12px;color:#946c7b}
 </div>
 
 <script>
+  
+const SHEET_WEB_APP_URL =
+  "https://script.google.com/u/1/home/projects/1oDsojkh2uicXMdDGIGAajkMq1JzdDF6DBzceHno_XipfZHiRjskReRDd/edit";
+
+const APP_TOKEN =
+  "https://script.google.com/macros/s/AKfycbxGvYji1XwmWoCSrEqpQzNOnFadUh4TXLm3kULQdV-NawdvEvVT4MdEYltVGOYspVu8Wg/exec";
+
+function syncAlarmToSheet(alarm, action = "save") {
+  if (!profile || !SHEET_WEB_APP_URL.includes("/exec")) {
+    console.warn("Google Sheets is not configured.");
+    return;
+  }
+
+  const data = {
+    token: APP_TOKEN,
+    action,
+    email: profile,
+    id: String(alarm.id),
+    hour: alarm.hour,
+    minute: alarm.minute,
+    reason: alarm.reason,
+    message: alarm.message,
+    repeat: alarm.repeat,
+    sound: alarm.sound,
+    duration: alarm.duration,
+    snooze: alarm.snooze,
+    enabled: alarm.enabled
+  };
+
+  const url = SHEET_WEB_APP_URL +
+    "?data=" + encodeURIComponent(JSON.stringify(data));
+
+  // GET request to the deployed Apps Script web app.
+  // The browser may not expose the response to this page.
+  fetch(url, {
+    method: "GET",
+    mode: "no-cors",
+    cache: "no-store"
+  }).catch(err => {
+    console.error("Google Sheets sync failed", err);
+  });
+}
+
 const $ = id => document.getElementById(id);
 const KEY = "bloom_alarm_data_v1";
 let profile = localStorage.getItem("bloom_email") || "";
@@ -319,49 +362,88 @@ function editAlarm(a){
   $("formTitle").textContent="✏️ Edit your alarm";
   show("editor");$("editor").scrollIntoView({behavior:"smooth"});
 }
-function deleteAlarm(id){
-  if(!confirm("Delete this alarm?"))return;
-  alarms=alarms.filter(a=>a.id!==id);persist();renderAlarms();
+
+function deleteAlarm(id) {
+  if (!confirm("Delete this alarm?")) return;
+
+  const alarm = alarms.find(a => a.id === id);
+  if (alarm) syncAlarmToSheet(alarm, "delete");
+
+  alarms = alarms.filter(a => a.id !== id);
+  persist();
+  renderAlarms();
 }
-function beep(){
-  try{
-    const AC=window.AudioContext||window.webkitAudioContext;
-    if(!AC)return;
-    if(!audioContext)audioContext=new AC();
-    if(audioContext.state==="suspended")audioContext.resume();
-    const osc=audioContext.createOscillator();
-    const gain=audioContext.createGain();
-    const classic=$("ringreason").dataset.sound==="classic";
-    osc.type="sine";osc.frequency.value=classic?880:660;
-    gain.gain.setValueAtTime(0.0001,audioContext.currentTime);
-    gain.gain.exponentialRampToValueAtTime(.18,audioContext.currentTime+.03);
-    gain.gain.exponentialRampToValueAtTime(.0001,audioContext.currentTime+.4);
-    osc.connect(gain);gain.connect(audioContext.destination);
-    osc.start();osc.stop(audioContext.currentTime+.42);
-  }catch(err){console.log("Audio unavailable",err)}
+
 }
+    
+function beep() {
+  try {
+    const AC = window.AudioContext || window.webkitAudioContext;
+    if (!AC) return;
+
+    if (!audioContext) audioContext = new AC();
+
+    if (audioContext.state === "suspended") {
+      audioContext.resume();
+    }
+
+    const ctx = audioContext;
+    const classic = $("ringreason").dataset.sound === "classic";
+    const start = ctx.currentTime;
+
+    // Two-tone alarm pattern, like a repeating phone alarm
+    const tones = classic
+      ? [{ f: 880, t: 0 }, { f: 660, t: 0.32 }]
+      : [{ f: 660, t: 0 }, { f: 880, t: 0.32 }];
+
+    tones.forEach(tone => {
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+
+      osc.type = "square";
+      osc.frequency.value = tone.f;
+
+      gain.gain.setValueAtTime(0.001, start + tone.t);
+      gain.gain.linearRampToValueAtTime(
+        0.12, start + tone.t + 0.035
+      );
+      gain.gain.setValueAtTime(
+        0.12, start + tone.t + 0.23
+      );
+      gain.gain.linearRampToValueAtTime(
+        0.001, start + tone.t + 0.30
+      );
+
+      osc.connect(gain);
+      gain.connect(ctx.destination);
+
+      osc.start(start + tone.t);
+      osc.stop(start + tone.t + 0.31);
+    });
+  } catch (err) {
+    console.log("Alarm sound unavailable", err);
+  }
+}
+
 function previewSound(){
   $("ringreason").dataset.sound=$("sound").value;
   beep();
 }
-function startRinging(a){
-  ringingId=a.id;
-  ringingUntil=Date.now()+a.duration*1000;
-  $("ringreason").dataset.sound=a.sound;
-  $("ringtime").textContent=formatTime(a);
-  $("ringreason").textContent=a.reason;
-  $("ringmessage").textContent=a.message;
-  $("snoozeButton").classList.toggle("hidden",!a.snooze);
-  show("ring");
+
+soundInterval = setInterval(() => {
+  if (Date.now() >= ringingUntil) {
+    stopAlarm();
+    return;
+  }
+
   beep();
-  clearInterval(soundInterval);
-  soundInterval=setInterval(()=>{
-    if(Date.now()>=ringingUntil){stopAlarm();return}
-    beep();
-    $("ringcount").textContent="Alarm ends in "+Math.max(0,Math.ceil((ringingUntil-Date.now())/1000))+" seconds";
-  },850);
-  clearTimeout(alarmEndTimer);
-  alarmEndTimer=setTimeout(stopAlarm,a.duration*1000);
+
+  $("ringcount").textContent =
+    "Alarm ends in " +
+    Math.max(0, Math.ceil((ringingUntil - Date.now()) / 1000)) +
+    " seconds";
+}, 700);
+
 }
 function stopAlarm(){
   clearInterval(soundInterval);clearTimeout(alarmEndTimer);
