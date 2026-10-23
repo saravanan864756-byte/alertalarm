@@ -2,503 +2,351 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="theme-color" content="#f8dce6">
-<title>Bloom Alarm 🌹</title>
-<style>
-*{box-sizing:border-box}
-body{margin:0;font-family:Arial,sans-serif;color:#633747;background:linear-gradient(145deg,#fff4f7,#f8dce8,#fff9fb);min-height:100vh}
-body:before{content:"🌹　🌸　✿　🌷　🌸";position:fixed;inset:0;opacity:.12;font-size:40px;line-height:100px;word-spacing:18px;pointer-events:none;animation:float 15s linear infinite;z-index:-1}
-@keyframes float{from{transform:translateY(0)}to{transform:translateY(-100px)}}
-header{display:flex;align-items:center;justify-content:space-between;padding:18px;max-width:600px;margin:auto}
-.brand{font-size:23px;font-weight:bold;color:#a83260}
-button,select,input,textarea{font:inherit}
-button{border:0;border-radius:14px;padding:12px 17px;cursor:pointer;background:#c63f73;color:white;font-weight:bold}
-button:active{transform:scale(.98)}
-.secondary{background:#f5e0e9;color:#873653}
-main{max-width:520px;margin:20px auto;padding:20px}
-.card{background:#ffffffdc;border:1px solid #f0cfdb;border-radius:24px;padding:24px;box-shadow:0 12px 35px #a84d6a13;margin-bottom:18px}
-h1{font-size:29px;margin:8px 0;color:#a83260}
-h2{font-size:21px}
-p{line-height:1.6}
-label{display:block;font-size:14px;font-weight:bold;margin:14px 0 7px}
-input,select,textarea{width:100%;padding:13px;border:1px solid #e8c5d2;border-radius:12px;background:#fffafb;color:#633747;outline-color:#c63f73}
-textarea{resize:vertical;min-height:85px}
-.row{display:flex;gap:9px}
-.row>*{flex:1;min-width:0}
-.full{width:100%;margin-top:16px}
-.clock{text-align:center;font-size:43px;font-weight:bold;color:#a83260;margin:15px 0 4px}
-.muted{color:#946c7b;font-size:13px}
-.alarm{border:1px solid #efd0dc;border-radius:16px;padding:15px;margin:12px 0;background:#fff8fb}
-.alarmtime{font-size:26px;font-weight:bold;color:#a83260}
-.actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
-.actions button{font-size:12px;padding:10px}
-.hidden{display:none!important}
-.menu{position:relative}
-.menuitems{position:absolute;right:0;top:45px;background:white;border:1px solid #efd0dc;border-radius:15px;padding:10px;width:190px;z-index:5;box-shadow:0 5px 20px #63374720}
-.menuitems button{width:100%;margin:3px 0;text-align:left}
-#ring{position:fixed;inset:0;background:#fff0f5;z-index:10;overflow:auto;padding:20px;display:flex;align-items:center;justify-content:center}
-.ringcard{background:white;border-radius:28px;padding:27px;max-width:430px;width:100%;text-align:center;box-shadow:0 15px 50px #a8326030}
-.ringtime{font-size:48px;color:#c63f73;font-weight:bold}
-footer{text-align:center;padding:25px;font-size:12px;color:#946c7b}
-@media(max-width:400px){main{padding:12px}.card{padding:18px}.clock{font-size:36px}}
-</style>
-</head>
-<body>
-<header>
-  <div class="brand">🌹 Bloom Alarm</div>
-  <div class="menu">
-    <button class="secondary" onclick="toggleMenu()">⋮</button>
-    <div id="menu" class="menuitems hidden">
-      <button class="secondary" onclick="showProfile()">My Profile</button>
-      <button class="secondary" onclick="showSettings()">Sound & Help</button>
-      <button class="secondary" onclick="installApp()">Install App</button>
-      <button class="secondary" onclick="logout()">Logout</button>
-    </div>
-  </div>
-</header>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AlertAlarm 🌸</title>
 
+  <style>
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      padding: 24px 14px;
+      font-family: Arial, sans-serif;
+      color: #503846;
+      background: linear-gradient(135deg, #ffe4ee, #e4eaff, #fff0dc);
+    }
+
+    main {
+      width: 100%;
+      max-width: 460px;
+      margin: 30px auto;
+    }
+
+    .card {
+      padding: 26px 22px;
+      margin-bottom: 18px;
+      background: rgba(255,255,255,.94);
+      border: 1px solid #ffffff;
+      border-radius: 24px;
+      box-shadow: 0 12px 35px rgba(117, 75, 100, .12);
+    }
+
+    h1 { font-size: 29px; line-height: 1.35; }
+    .muted { color: #927d8b; font-size: 13px; line-height: 1.6; }
+
+    label {
+      display: block;
+      margin: 16px 0 8px;
+      font-weight: bold;
+      font-size: 14px;
+    }
+
+    input {
+      width: 100%;
+      padding: 14px;
+      border: 1px solid #ead5e1;
+      border-radius: 12px;
+      font-size: 16px;
+      outline-color: #d76b9d;
+      background: white;
+    }
+
+    button {
+      padding: 13px 16px;
+      border: none;
+      border-radius: 12px;
+      background: #d85f98;
+      color: white;
+      font-size: 15px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    button:hover { background: #bb477f; }
+    .full { width: 100%; margin-top: 18px; }
+    .clock { font-size: 38px; font-weight: bold; margin: 14px 0; }
+    .hidden { display: none !important; }
+
+    .alarm-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      padding: 14px 0;
+      border-bottom: 1px solid #f0e2ea;
+    }
+
+    .alarm-time { font-size: 22px; font-weight: bold; }
+    .delete-btn { background: #8c7180; }
+    .small-note { font-size: 12px; }
+  </style>
+</head>
+
+<body>
 <main>
+
   <section id="login" class="card">
     <div style="font-size:55px;text-align:center">🌹</div>
     <p class="muted" style="text-align:center">YOUR GENTLE DAILY COMPANION</p>
     <h1 style="text-align:center">A Little Reminder,<br>Just for You 🌸</h1>
     <p style="text-align:center">Every moment matters. Let your reminders bloom.</p>
+
     <form id="loginForm">
       <label for="email">Your Gmail / Email</label>
-      <input id="email" type="email" placeholder="you@gmail.com" required autocomplete="email">
+      <input id="email" type="email"
+             placeholder="you@gmail.com"
+             required autocomplete="email">
       <button class="full" type="submit">Continue to My Alarms →</button>
     </form>
-    <p class="muted">Email is saved only in this browser. This is not verified Google sign-in.</p>
+
+    <p class="muted">
+      Your email is saved in this browser only.
+      This is not verified Google sign-in.
+    </p>
   </section>
 
   <section id="dashboard" class="hidden">
     <div class="card" style="text-align:center">
-      <div>🌷 A peaceful moment for you</div>
+      <div style="font-size:35px">🌷</div>
+      <div>A peaceful moment for you</div>
       <div id="clock" class="clock">--:--:--</div>
       <div id="today" class="muted"></div>
       <p id="greeting">Welcome 🌸</p>
-      <button onclick="newAlarm()">＋ Create New Alarm</button>
+      <button id="newAlarmBtn" type="button">＋ Create New Alarm</button>
+      <button id="logoutBtn" type="button"
+              style="background:#8c7180;margin-left:5px">Logout</button>
     </div>
 
-    <div id="editor" class="card hidden">
-      <h2 id="formTitle">🌸 Create your alarm</h2>
+    <div id="alarmFormCard" class="card hidden">
+      <h2>Create an alarm 🌼</h2>
       <form id="alarmForm">
-        <label>Choose alarm time</label>
-        <div class="row">
-          <select id="hour" aria-label="Hour"></select>
-          <select id="minute" aria-label="Minute"></select>
-          <select id="ampm" aria-label="AM or PM">
-            <option>AM</option><option>PM</option>
-          </select>
-        </div>
+        <label for="alarmTitle">Alarm name</label>
+        <input id="alarmTitle" type="text"
+               placeholder="Study, exercise, drink water"
+               required>
 
-        <label>Why are you setting this alarm?</label>
-        <select id="reason" required>
-          <option value="">Choose a reason</option>
-          <option>Study time 📚</option>
-          <option>Work reminder 💻</option>
-          <option>Drink water 💧</option>
-          <option>Exercise 🏃</option>
-          <option>Take a break 🌸</option>
-          <option>Meeting 📅</option>
-          <option>Medicine 💊</option>
-          <option>Personal reminder 💗</option>
-          <option>Other</option>
-        </select>
+        <label for="alarmTime">Alarm time</label>
+        <input id="alarmTime" type="time" required>
 
-        <label>Your reminder message</label>
-        <textarea id="message" required maxlength="500" placeholder="What do you want to remember?"></textarea>
-
-        <label>Repeat</label>
-        <select id="repeat">
-          <option value="once">Only once</option>
-          <option value="daily">Every day</option>
-        </select>
-
-        <label>Alarm sound</label>
-        <select id="sound">
-          <option value="gentle">Gentle chime</option>
-          <option value="classic">Classic alarm</option>
-          <option value="soft">Soft melody</option>
-        </select>
-        <button type="button" class="secondary" onclick="previewSound()">▶ Preview sound</button>
-
-        <label>How long should it ring?</label>
-        <select id="duration">
-          <option value="30">30 seconds</option>
-          <option value="60" selected>1 minute</option>
-          <option value="180">3 minutes</option>
-          <option value="300">5 minutes</option>
-          <option value="600">10 minutes</option>
-        </select>
-
-        <label><input id="snoozeEnabled" type="checkbox" checked style="width:auto"> Allow 10-minute snooze</label>
-
-        <button class="full" type="submit">💗 Save Alarm</button>
-        <button class="full secondary" type="button" onclick="cancelEdit()">Cancel</button>
+        <button class="full" type="submit">Save Alarm</button>
+        <button class="full" id="cancelAlarmBtn" type="button"
+                style="background:#8c7180">Cancel</button>
       </form>
     </div>
 
     <div class="card">
       <h2>🌸 My Reminders</h2>
-      <p class="muted">Your goals, one gentle reminder at a time.</p>
-      <div id="alarms"></div>
-    </div>
-
-    <div class="card">
-      <h2>🔔 Notifications & Background</h2>
-      <p class="muted">Allow notifications for supported browser alerts. For sound at the scheduled time, keep this page open and your device awake. Background alarms are not guaranteed by a website.</p>
-      <button class="secondary" onclick="enableNotifications()">Enable notifications</button>
-      <p id="permission" class="muted"></p>
+      <div id="alarmList"></div>
+      <p id="emptyMessage" class="muted">
+        No alarms yet. Create your first reminder!
+      </p>
+      <button id="enableNotificationsBtn" class="full" type="button">
+        Enable Browser Notifications
+      </button>
+      <p class="muted small-note">
+        Keep this website open to receive in-page alarm alerts.
+        Browser notifications depend on your permission and device settings.
+      </p>
     </div>
   </section>
+
 </main>
 
-<footer>Made with 🌹 and love · Bloom Alarm</footer>
-
-<div id="ring" class="hidden">
-  <div class="ringcard">
-    <div style="font-size:70px">🌹</div>
-    <p>YOUR MOMENT HAS ARRIVED</p>
-    <div id="ringtime" class="ringtime"></div>
-    <h2 id="ringreason"></h2>
-    <p id="ringmessage"></p>
-    <p id="ringcount" class="muted"></p>
-    <button id="snoozeButton" class="secondary full" onclick="snoozeAlarm()">⏰ Snooze 10 minutes</button>
-    <button class="full" onclick="stopAlarm()">Stop Alarm ✓</button>
-  </div>
-</div>
-
 <script>
-  
-const SHEET_WEB_APP_URL =
-  "https://script.google.com/u/1/home/projects/1oDsojkh2uicXMdDGIGAajkMq1JzdDF6DBzceHno_XipfZHiRjskReRDd/edit";
+(() => {
+  const $ = id => document.getElementById(id);
 
-const APP_TOKEN =
-  "https://script.google.com/macros/s/AKfycbxGvYji1XwmWoCSrEqpQzNOnFadUh4TXLm3kULQdV-NawdvEvVT4MdEYltVGOYspVu8Wg/exec";
+  let alarms = [];
+  let notified = new Set();
 
-function syncAlarmToSheet(alarm, action = "save") {
-  if (!profile || !SHEET_WEB_APP_URL.includes("/exec")) {
-    console.warn("Google Sheets is not configured.");
-    return;
+  function getEmail() {
+    return localStorage.getItem("alertalarm_email") || "";
   }
 
-  const data = {
-    token: APP_TOKEN,
-    action,
-    email: profile,
-    id: String(alarm.id),
-    hour: alarm.hour,
-    minute: alarm.minute,
-    reason: alarm.reason,
-    message: alarm.message,
-    repeat: alarm.repeat,
-    sound: alarm.sound,
-    duration: alarm.duration,
-    snooze: alarm.snooze,
-    enabled: alarm.enabled
-  };
-
-  const url = SHEET_WEB_APP_URL +
-    "?data=" + encodeURIComponent(JSON.stringify(data));
-
-  // GET request to the deployed Apps Script web app.
-  // The browser may not expose the response to this page.
-  fetch(url, {
-    method: "GET",
-    mode: "no-cors",
-    cache: "no-store"
-  }).catch(err => {
-    console.error("Google Sheets sync failed", err);
-  });
-}
-
-const $ = id => document.getElementById(id);
-const KEY = "bloom_alarm_data_v1";
-let profile = localStorage.getItem("bloom_email") || "";
-let alarms = [];
-let editingId = null;
-let ringingId = null;
-let ringingUntil = 0;
-let audioContext = null;
-let soundInterval = null;
-let alarmEndTimer = null;
-let deferredInstall = null;
-let fired = new Set();
-
-try { alarms = JSON.parse(localStorage.getItem(KEY) || "[]"); } catch { alarms = []; }
-if (!Array.isArray(alarms)) alarms = [];
-
-for (let i=1;i<=12;i++) $("hour").add(new Option(String(i).padStart(2,"0"),i));
-for (let i=0;i<60;i++) $("minute").add(new Option(String(i).padStart(2,"0"),i));
-
-function persist(){
-  localStorage.setItem(KEY,JSON.stringify(alarms));
-}
-function show(id){$(id).classList.remove("hidden")}
-function hide(id){$(id).classList.add("hidden")}
-
-$("loginForm").addEventListener("submit",e=>{
-  e.preventDefault();
-  profile=$("email").value.trim();
-  if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(profile)){
-    alert("Please enter a valid email address.");return;
+  function storageKey() {
+    return "alertalarm_alarms_" + getEmail().toLowerCase();
   }
-  localStorage.setItem("bloom_email",profile);
-  enterApp();
-});
 
-function enterApp(){
-  if(!profile)return;
-  hide("login");show("dashboard");
-  $("greeting").textContent="Welcome, "+profile.split("@")[0]+" 🌸";
-  renderAlarms();
-}
-if(profile){$("email").value=profile;enterApp();}
-
-function updateClock(){
-  const now=new Date();
-  $("clock").textContent=now.toLocaleTimeString("en-IN",{hour:"2-digit",minute:"2-digit",second:"2-digit",hour12:true});
-  $("today").textContent=now.toLocaleDateString("en-IN",{weekday:"long",day:"numeric",month:"long",year:"numeric"});
-}
-updateClock();
-setInterval(updateClock,1000);
-
-function toggleMenu(){$("menu").classList.toggle("hidden")}
-function showProfile(){alert("Signed in locally as: "+profile)}
-function showSettings(){alert("Choose an alarm sound in the alarm form. For reliable alarms while the browser is closed, a native mobile app may be required.")}
-function logout(){
-  if(!confirm("Log out of Bloom Alarm? Your saved alarms will remain on this device."))return;
-  localStorage.removeItem("bloom_email");profile="";hide("dashboard");show("login");
-}
-function newAlarm(){
-  editingId=null;
-  $("alarmForm").reset();
-  $("formTitle").textContent="🌸 Create your alarm";
-  $("hour").value=8;$("minute").value=0;$("ampm").value="AM";
-  show("editor");
-  $("editor").scrollIntoView({behavior:"smooth"});
-}
-function cancelEdit(){hide("editor");editingId=null}
-
-function nextOccurrence(hour,minute,repeat){
-  const now=new Date();
-  const d=new Date();
-  d.setHours(hour,minute,0,0);
-  if(d.getTime()<=now.getTime())d.setDate(d.getDate()+1);
-  return d.getTime();
-}
-
-$("alarmForm").addEventListener("submit",e=>{
-  e.preventDefault();
-  const h=Number($("hour").value);
-  const m=Number($("minute").value);
-  const hour24=(h%12)+($("ampm").value==="PM"?12:0);
-  const repeat=$("repeat").value;
-  const time=nextOccurrence(hour24,m,repeat);
-  const item={
-    id:editingId||String(Date.now()),
-    hour:hour24,minute:m,reason:$("reason").value,
-    message:$("message").value.trim(),
-    repeat,sound:$("sound").value,
-    duration:Number($("duration").value),
-    snooze:$("snoozeEnabled").checked,
-    enabled:true,nextAt:time
-  };
-  if(!item.reason||!item.message){alert("Please enter a reason and message.");return}
-  if(editingId){
-    const index=alarms.findIndex(a=>a.id===editingId);
-    if(index>=0)alarms[index]=item;
-  }else alarms.push(item);
-  persist();renderAlarms();cancelEdit();
-  alert("Your alarm has been saved 🌹");
-});
-
-function formatTime(a){
-  const d=new Date();
-  d.setHours(a.hour,a.minute,0,0);
-  return d.toLocaleTimeString("en-IN",{hour:"2-digit",minute:"2-digit",hour12:true});
-}
-function renderAlarms(){
-  const root=$("alarms");
-  root.innerHTML="";
-  if(!alarms.length){
-    root.innerHTML="<p class='muted'>No alarms yet. Tap Create New Alarm to get started 🌸</p>";
-    return;
-  }
-  alarms.sort((a,b)=>a.nextAt-b.nextAt);
-  alarms.forEach(a=>{
-    const card=document.createElement("div");card.className="alarm";
-    const time=document.createElement("div");time.className="alarmtime";time.textContent=formatTime(a);
-    const status=document.createElement("p");status.className="muted";status.textContent=(a.enabled?"● Enabled":"○ Disabled")+" · "+(a.repeat==="daily"?"Daily":"Once");
-    const reason=document.createElement("strong");reason.textContent=a.reason;
-    const msg=document.createElement("p");msg.textContent=a.message;
-    const actions=document.createElement("div");actions.className="actions";
-    const makeButton=(label,fn,cls="")=>{
-      const b=document.createElement("button");b.textContent=label;
-      if(cls)b.className=cls;b.onclick=fn;return b;
-    };
-    actions.append(
-      makeButton(a.enabled?"Disable":"Enable",()=>{a.enabled=!a.enabled;persist();renderAlarms()},"secondary"),
-      makeButton("Edit",()=>editAlarm(a),"secondary"),
-      makeButton("Delete",()=>deleteAlarm(a.id),"secondary")
-    );
-    card.append(time,status,reason,msg,actions);root.append(card);
-  });
-}
-function editAlarm(a){
-  editingId=a.id;
-  $("hour").value=a.hour%12||12;
-  $("minute").value=a.minute;
-  $("ampm").value=a.hour>=12?"PM":"AM";
-  $("reason").value=a.reason;
-  $("message").value=a.message;
-  $("repeat").value=a.repeat;
-  $("sound").value=a.sound;
-  $("duration").value=a.duration;
-  $("snoozeEnabled").checked=a.snooze;
-  $("formTitle").textContent="✏️ Edit your alarm";
-  show("editor");$("editor").scrollIntoView({behavior:"smooth"});
-}
-
-function deleteAlarm(id) {
-  if (!confirm("Delete this alarm?")) return;
-
-  const alarm = alarms.find(a => a.id === id);
-  if (alarm) syncAlarmToSheet(alarm, "delete");
-
-  alarms = alarms.filter(a => a.id !== id);
-  persist();
-  renderAlarms();
-}
-
-}
-    
-function beep() {
-  try {
-    const AC = window.AudioContext || window.webkitAudioContext;
-    if (!AC) return;
-
-    if (!audioContext) audioContext = new AC();
-
-    if (audioContext.state === "suspended") {
-      audioContext.resume();
+  function loadAlarms() {
+    try {
+      alarms = JSON.parse(localStorage.getItem(storageKey()) || "[]");
+      if (!Array.isArray(alarms)) alarms = [];
+    } catch {
+      alarms = [];
     }
-
-    const ctx = audioContext;
-    const classic = $("ringreason").dataset.sound === "classic";
-    const start = ctx.currentTime;
-
-    // Two-tone alarm pattern, like a repeating phone alarm
-    const tones = classic
-      ? [{ f: 880, t: 0 }, { f: 660, t: 0.32 }]
-      : [{ f: 660, t: 0 }, { f: 880, t: 0.32 }];
-
-    tones.forEach(tone => {
-      const osc = ctx.createOscillator();
-      const gain = ctx.createGain();
-
-      osc.type = "square";
-      osc.frequency.value = tone.f;
-
-      gain.gain.setValueAtTime(0.001, start + tone.t);
-      gain.gain.linearRampToValueAtTime(
-        0.12, start + tone.t + 0.035
-      );
-      gain.gain.setValueAtTime(
-        0.12, start + tone.t + 0.23
-      );
-      gain.gain.linearRampToValueAtTime(
-        0.001, start + tone.t + 0.30
-      );
-
-      osc.connect(gain);
-      gain.connect(ctx.destination);
-
-      osc.start(start + tone.t);
-      osc.stop(start + tone.t + 0.31);
-    });
-  } catch (err) {
-    console.log("Alarm sound unavailable", err);
-  }
-}
-
-function previewSound(){
-  $("ringreason").dataset.sound=$("sound").value;
-  beep();
-}
-
-soundInterval = setInterval(() => {
-  if (Date.now() >= ringingUntil) {
-    stopAlarm();
-    return;
   }
 
-  beep();
+  function saveAlarms() {
+    localStorage.setItem(storageKey(), JSON.stringify(alarms));
+  }
 
-  $("ringcount").textContent =
-    "Alarm ends in " +
-    Math.max(0, Math.ceil((ringingUntil - Date.now()) / 1000)) +
-    " seconds";
-}, 700);
-
-}
-function stopAlarm(){
-  clearInterval(soundInterval);clearTimeout(alarmEndTimer);
-  soundInterval=null;alarmEndTimer=null;
-  hide("ring");ringingId=null;
-}
-function snoozeAlarm(){
-  const a=alarms.find(x=>x.id===ringingId);
-  if(!a)return;
-  a.nextAt=Date.now()+10*60*1000;
-  fired.delete(a.id);
-  persist();stopAlarm();renderAlarms();
-}
-setInterval(()=>{
-  const now=Date.now();
-  alarms.forEach(a=>{
-    if(!a.enabled||now<a.nextAt||fired.has(a.id))return;
-    fired.add(a.id);
-    if(a.repeat==="daily"){
-      const next=new Date(a.nextAt);
-      next.setDate(next.getDate()+1);
-      a.nextAt=next.getTime();persist();
-    }else{
-      a.enabled=false;persist();
-    }
-    startRinging(a);
-    if("Notification" in window && Notification.permission==="granted"){
-      try{new Notification("Bloom Alarm 🌹",{body:a.reason+": "+a.message})}catch{}
-    }
+  function showDashboard() {
+    $("login").classList.add("hidden");
+    $("dashboard").classList.remove("hidden");
+    $("greeting").textContent = "Welcome, " + getEmail() + " 🌸";
+    loadAlarms();
     renderAlarms();
-  });
-},1000);
+    updateClock();
+  }
 
-async function enableNotifications(){
-  if(!("Notification" in window)){
-    $("permission").textContent="Notifications are not supported in this browser.";return;
+  $("loginForm").addEventListener("submit", event => {
+    event.preventDefault();
+
+    const email = $("email").value.trim();
+
+    if (!email || !$("email").checkValidity()) {
+      $("email").reportValidity();
+      return;
+    }
+
+    localStorage.setItem("alertalarm_email", email);
+    showDashboard();
+  });
+
+  $("newAlarmBtn").addEventListener("click", () => {
+    $("alarmFormCard").classList.remove("hidden");
+    $("alarmTitle").focus();
+  });
+
+  $("cancelAlarmBtn").addEventListener("click", () => {
+    $("alarmFormCard").classList.add("hidden");
+    $("alarmForm").reset();
+  });
+
+  $("alarmForm").addEventListener("submit", event => {
+    event.preventDefault();
+
+    const title = $("alarmTitle").value.trim();
+    const time = $("alarmTime").value;
+
+    if (!title || !time) return;
+
+    alarms.push({
+      id: Date.now().toString(),
+      title,
+      time,
+      lastFired: ""
+    });
+
+    saveAlarms();
+    renderAlarms();
+    $("alarmForm").reset();
+    $("alarmFormCard").classList.add("hidden");
+  });
+
+  function renderAlarms() {
+    const list = $("alarmList");
+    list.replaceChildren();
+
+    $("emptyMessage").classList.toggle("hidden", alarms.length > 0);
+
+    alarms.sort((a, b) => a.time.localeCompare(b.time));
+
+    alarms.forEach(alarm => {
+      const item = document.createElement("div");
+      item.className = "alarm-item";
+
+      const details = document.createElement("div");
+      const time = document.createElement("div");
+      time.className = "alarm-time";
+      time.textContent = alarm.time;
+
+      const title = document.createElement("div");
+      title.textContent = alarm.title;
+
+      details.append(time, title);
+
+      const remove = document.createElement("button");
+      remove.className = "delete-btn";
+      remove.type = "button";
+      remove.textContent = "Delete";
+
+      remove.addEventListener("click", () => {
+        alarms = alarms.filter(a => a.id !== alarm.id);
+        saveAlarms();
+        renderAlarms();
+      });
+
+      item.append(details, remove);
+      list.append(item);
+    });
   }
-  try{
-    const p=await Notification.requestPermission();
-    $("permission").textContent="Notification permission: "+p;
-  }catch{
-    $("permission").textContent="Unable to request permission. Check browser settings.";
+
+  function updateClock() {
+    const now = new Date();
+
+    $("clock").textContent = now.toLocaleTimeString();
+    $("today").textContent = now.toLocaleDateString(undefined, {
+      weekday: "long",
+      year: "numeric",
+      month: "long",
+      day: "numeric"
+    });
+
+    const todayKey = [
+      now.getFullYear(),
+      now.getMonth(),
+      now.getDate()
+    ].join("-");
+
+    const currentTime = [
+      String(now.getHours()).padStart(2, "0"),
+      String(now.getMinutes()).padStart(2, "0")
+    ].join(":");
+
+    alarms.forEach(alarm => {
+      const key = alarm.id + "_" + todayKey;
+
+      if (alarm.time === currentTime && !notified.has(key)) {
+        notified.add(key);
+
+        alert("🌸 Alarm: " + alarm.title);
+
+        if ("Notification" in window &&
+            Notification.permission === "granted") {
+          new Notification("AlertAlarm 🌸", {
+            body: alarm.title
+          });
+        }
+      }
+    });
   }
-}
-function installApp(){
-  if(deferredInstall){
-    deferredInstall.prompt();
-    deferredInstall.userChoice.then(()=>{deferredInstall=null});
-  }else{
-    alert("On supported browsers, use the browser menu → Install app or Add to Home Screen. A manifest and service worker are required for full PWA installation.");
+
+  $("enableNotificationsBtn").addEventListener("click", async () => {
+    if (!("Notification" in window)) {
+      alert("Browser notifications are not supported here.");
+      return;
+    }
+
+    try {
+      const permission = await Notification.requestPermission();
+
+      if (permission === "granted") {
+        alert("Notifications enabled 🌸");
+      } else {
+        alert("Notifications were not allowed. Check browser settings.");
+      }
+    } catch {
+      alert("Could not enable notifications in this browser.");
+    }
+  });
+
+  $("logoutBtn").addEventListener("click", () => {
+    $("dashboard").classList.add("hidden");
+    $("login").classList.remove("hidden");
+    $("email").value = "";
+    localStorage.removeItem("alertalarm_email");
+  });
+
+  setInterval(updateClock, 1000);
+
+  if (getEmail()) {
+    $("email").value = getEmail();
+    showDashboard();
   }
-}
-window.addEventListener("beforeinstallprompt",e=>{
-  e.preventDefault();deferredInstall=e;
-});
+})();
 </script>
 </body>
 </html>
