@@ -1,0 +1,610 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Memory Alert · Gentle Time</title>
+  <style>
+    :root {
+      --rose-600: #e11d48;
+      --rose-500: #f43f5e;
+      --rose-400: #fb7185;
+      --rose-300: #fda4af;
+      --rose-200: #fecdd3;
+      --rose-100: #ffe4e6;
+      --rose-50: #fff1f2;
+      --rose-800: #9f1239;
+      --rose-700: #be123c;
+      --slate-800: #1e293b;
+      --slate-600: #475569;
+      --slate-500: #64748b;
+      --slate-400: #94a3b8;
+      --bg: #fcf8fa;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html, body { height: 100%; }
+
+    body {
+      font-family: "Liberation Sans", Arial, Helvetica, sans-serif;
+      background: var(--bg);
+      color: var(--slate-800);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      overflow-x: hidden;
+      position: relative;
+    }
+
+    /* ---------- Header ---------- */
+    .main-header {
+      position: sticky;
+      top: 0;
+      z-index: 3;
+      background: rgba(255, 255, 255, 0.8);
+      backdrop-filter: blur(6px);
+      -webkit-backdrop-filter: blur(6px);
+      border-bottom: 1px solid rgba(255, 228, 230, 0.7);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding-bottom: 11px;
+    }
+
+    .header-row {
+      width: 100%;
+      max-width: 448px;
+      height: 64px;
+      padding: 0 16px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .emblem-sm {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      border: 1px solid var(--rose-200);
+      background: #fff;
+      box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+      flex-shrink: 0;
+    }
+
+    .emblem-sm svg { width: 100%; height: 100%; }
+
+    .brand-name {
+      font-weight: 700;
+      font-size: 18px;
+      letter-spacing: -0.45px;
+      line-height: 28px;
+      background: linear-gradient(90deg, var(--rose-500), var(--rose-400));
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+      white-space: nowrap;
+    }
+
+    .brand-sub {
+      font-weight: 700;
+      font-size: 10px;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      color: var(--slate-400);
+      line-height: 10px;
+      white-space: nowrap;
+    }
+
+    .actions {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .btn-new {
+      background: var(--rose-50);
+      border: none;
+      border-radius: 9999px;
+      padding: 6px 12px;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      font-family: inherit;
+      font-weight: 700;
+      font-size: 12px;
+      color: var(--rose-600);
+      cursor: pointer;
+    }
+
+    .btn-new:hover { background: var(--rose-100); }
+
+    .btn-menu {
+      width: 36px;
+      height: 36px;
+      border: none;
+      border-radius: 9999px;
+      background: transparent;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      color: var(--slate-600);
+    }
+
+    .btn-menu:hover { background: var(--rose-50); }
+
+    .tabs {
+      width: 416px;
+      max-width: calc(100% - 32px);
+      background: rgba(255, 228, 230, 0.7);
+      border-radius: 16px;
+      padding: 4px;
+      display: flex;
+    }
+
+    .tab {
+      flex: 1 0 0;
+      min-width: 0;
+      border: none;
+      border-radius: 12px;
+      padding: 6px 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      font-family: inherit;
+      font-weight: 700;
+      font-size: 12px;
+      background: transparent;
+      color: var(--slate-600);
+      cursor: pointer;
+      white-space: nowrap;
+    }
+
+    .tab.active {
+      background: #fff;
+      color: var(--rose-700);
+    }
+
+    .tab-badge {
+      background: var(--rose-200);
+      color: var(--rose-800);
+      font-size: 10px;
+      border-radius: 9999px;
+      padding: 0 6px;
+      line-height: 16px;
+    }
+
+    /* ---------- Main ---------- */
+    main {
+      position: relative;
+      z-index: 2;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 16px 16px 40px;
+    }
+
+    .welcome {
+      width: 100%;
+      max-width: 416px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding-top: 40px;
+    }
+
+    .emblem-wrap {
+      position: relative;
+      width: 144px;
+      height: 144px;
+      margin-bottom: 24px;
+    }
+
+    .emblem-glow {
+      position: absolute;
+      inset: -18px;
+      border-radius: 50%;
+      background: rgba(254, 205, 211, 0.5);
+      filter: blur(12px);
+      z-index: 0;
+    }
+
+    .emblem-lg {
+      position: relative;
+      z-index: 1;
+      width: 144px;
+      height: 144px;
+      border-radius: 50%;
+      border: 4px solid #fff;
+      background: #fff;
+      box-shadow: 0 10px 25px -5px rgba(244, 63, 94, 0.25), 0 8px 10px -6px rgba(244, 63, 94, 0.2);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+    }
+
+    .emblem-lg svg { width: 100%; height: 100%; }
+
+    .chip {
+      background: rgba(255, 228, 230, 0.8);
+      border-radius: 9999px;
+      padding: 4px 12px;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-weight: 700;
+      font-size: 12px;
+      letter-spacing: 0.3px;
+      color: var(--rose-700);
+      margin-bottom: 12px;
+    }
+
+    h1 {
+      font-weight: 700;
+      font-size: 24px;
+      line-height: 32px;
+      letter-spacing: -0.6px;
+      color: var(--slate-800);
+      text-align: center;
+      margin-bottom: 8px;
+    }
+
+    .lede {
+      font-size: 14px;
+      line-height: 20px;
+      color: var(--slate-500);
+      text-align: center;
+      max-width: 320px;
+      margin-bottom: 32px;
+    }
+
+    /* ---------- Card ---------- */
+    .card {
+      position: relative;
+      width: 100%;
+      background: #fff;
+      border: 1px solid var(--rose-100);
+      border-radius: 24px;
+      padding: 25px;
+    }
+
+    .card::before {
+      content: "";
+      position: absolute;
+      inset: -1px;
+      border-radius: 24px;
+      box-shadow: 0 12px 30px -4px rgba(225, 29, 72, 0.08), 0 4px 12px -2px rgba(0, 0, 0, 0.03);
+      pointer-events: none;
+    }
+
+    form {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      position: relative;
+    }
+
+    .field {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .field label {
+      font-weight: 700;
+      font-size: 12px;
+      color: var(--slate-600);
+    }
+
+    .input-wrap {
+      position: relative;
+    }
+
+    .input-wrap input {
+      width: 100%;
+      background: rgba(255, 241, 242, 0.5);
+      border: 1px solid rgba(254, 205, 211, 0.8);
+      border-radius: 16px;
+      padding: 17px 41px 17px 17px;
+      font-family: inherit;
+      font-size: 14px;
+      color: var(--slate-800);
+      outline: none;
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+
+    .input-wrap input::placeholder { color: #6b7280; opacity: 0.8; }
+
+    .input-wrap input:focus {
+      border-color: var(--rose-300);
+      box-shadow: 0 0 0 3px rgba(253, 164, 175, 0.25);
+    }
+
+    .input-icon {
+      position: absolute;
+      right: 16px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--slate-400);
+      font-size: 16px;
+      line-height: 1;
+      pointer-events: none;
+    }
+
+    .btn-submit {
+      width: 100%;
+      position: relative;
+      border: none;
+      border-radius: 16px;
+      padding: 14px 24px;
+      background: linear-gradient(90deg, var(--rose-500), var(--rose-400));
+      box-shadow: 0 10px 25px -5px rgba(244, 63, 94, 0.25), 0 8px 10px -6px rgba(244, 63, 94, 0.2);
+      color: #fff;
+      font-family: inherit;
+      font-weight: 700;
+      font-size: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      cursor: pointer;
+      transition: transform 0.15s, opacity 0.15s;
+    }
+
+    .btn-submit:hover { transform: translateY(-1px); }
+    .btn-submit:active { transform: translateY(0); }
+    .btn-submit:disabled { opacity: 0.6; cursor: default; transform: none; }
+
+    .status {
+      min-height: 18px;
+      font-size: 13px;
+      text-align: center;
+      font-weight: 700;
+    }
+
+    .status.ok { color: #15803d; }
+    .status.err { color: var(--rose-600); }
+
+    .footnote {
+      font-size: 11px;
+      line-height: 18px;
+      color: var(--slate-400);
+      text-align: center;
+      padding-bottom: 1px;
+    }
+
+    /* ---------- Falling petals ---------- */
+    .petals {
+      position: fixed;
+      inset: 0;
+      overflow: hidden;
+      pointer-events: none;
+      z-index: 1;
+    }
+
+    .petal {
+      position: absolute;
+      top: -30px;
+      width: 14px;
+      height: 20px;
+      border-radius: 60% 0 60% 0;
+      opacity: 0.5;
+      animation-name: fall;
+      animation-timing-function: linear;
+      animation-iteration-count: infinite;
+    }
+
+    @keyframes fall {
+      0%   { transform: translate3d(0, 0, 0) rotate(0deg); }
+      50%  { transform: translate3d(18px, 50vh, 0) rotate(180deg); }
+      100% { transform: translate3d(-10px, 110vh, 0) rotate(360deg); }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .petal { animation: none; display: none; }
+    }
+
+    /* ---------- Small screens ---------- */
+    @media (max-width: 480px) {
+      .brand-name { font-size: 16px; }
+      .tab { font-size: 11px; }
+      .card { padding: 20px; }
+    }
+  </style>
+</head>
+<body>
+
+  <header class="main-header">
+    <div class="header-row">
+      <div class="brand">
+        <div class="emblem-sm" aria-hidden="true">
+          <!-- Simplified rose emblem. Swap in the exact Figma export if you have it. -->
+          <svg viewBox="0 0 40 40">
+            <circle cx="20" cy="20" r="19" fill="#fff"/>
+            <path d="M20 12c-4 0-7 3-7 7 0 2 1 3.5 2.5 4.5C14 25 15 28 20 28s6-3 4.5-4.5C26 22.5 27 21 27 19c0-4-3-7-7-7z" fill="#e8a7a7"/>
+            <path d="M20 15c-2 0-3.5 1.5-3.5 3.5S18 22 20 22s3.5-1.5 3.5-3.5S22 15 20 15z" fill="#d88a8a"/>
+            <path d="M12 29c3-2 5-2 8 1 3-3 5-3 8-1" stroke="#9cc9a0" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+          </svg>
+        </div>
+        <div>
+          <div class="brand-name">Memory Alert</div>
+          <div class="brand-sub">Gentle Time</div>
+        </div>
+      </div>
+      <div class="actions">
+        <button class="btn-new" type="button">
+          <span aria-hidden="true">+</span> New
+        </button>
+        <button class="btn-menu" type="button" aria-label="Open menu options">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+            <circle cx="12" cy="5" r="1.8"/><circle cx="12" cy="12" r="1.8"/><circle cx="12" cy="19" r="1.8"/>
+          </svg>
+        </button>
+      </div>
+    </div>
+
+    <nav class="tabs" aria-label="View switcher">
+      <button class="tab active" type="button">
+        <span aria-hidden="true">👋</span>
+        <span>Name Entry</span>
+      </button>
+      <button class="tab" type="button">
+        <span aria-hidden="true">🏠</span>
+        <span>Home Dashboard</span>
+        <span class="tab-badge">Priya</span>
+      </button>
+    </nav>
+  </header>
+
+  <main>
+    <section class="welcome">
+      <div class="emblem-wrap">
+        <div class="emblem-glow"></div>
+        <div class="emblem-lg">
+          <svg viewBox="0 0 144 144" aria-hidden="true">
+            <!-- Simplified rose emblem. Swap in the exact Figma export if you have it. -->
+            <circle cx="72" cy="72" r="70" fill="#fff"/>
+            <circle cx="72" cy="72" r="46" fill="none" stroke="#e8c4b8" stroke-width="1.5"/>
+            <path d="M72 40c-14 0-24 10-24 24 0 7 3 12 8 16-2 2-3 5-3 7 0 4 5 8 19 8s19-4 19-8c0-2-1-5-3-7 5-4 8-9 8-16 0-14-10-24-24-24z" fill="#e8a7a7"/>
+            <path d="M72 52c-8 0-13 5-13 12s5 12 13 12 13-5 13-12-5-12-13-12z" fill="#d88a8a"/>
+            <path d="M72 62c-3 0-5 2-5 5s2 5 5 5 5-2 5-5-2-5-5-5z" fill="#c26b6b"/>
+            <path d="M40 104c10-6 20-6 32 2 12-8 22-8 32-2" stroke="#9cc9a0" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+            <path d="M52 96c-4 6-4 12 0 18M92 96c4 6 4 12 0 18" stroke="#9cc9a0" stroke-width="2" fill="none" stroke-linecap="round"/>
+          </svg>
+        </div>
+      </div>
+
+      <span class="chip"><span aria-hidden="true">✨</span> Gentle mindful reminders</span>
+      <h1>A Little Reminder, Just for You 🌹</h1>
+      <p class="lede">Make every moment meaningful. Set peaceful chimes and thoughtful memory alerts that bloom when you need them.</p>
+
+      <div class="card">
+        <form id="signinForm" novalidate>
+          <div class="field">
+            <label for="name">Your Name</label>
+            <div class="input-wrap">
+              <input id="name" name="name" type="text" placeholder="Enter your name, e.g. Priya / Ananya" autocomplete="name" required />
+              <span class="input-icon" aria-hidden="true">👤</span>
+            </div>
+          </div>
+
+          <div class="field">
+            <label for="email">Email</label>
+            <div class="input-wrap">
+              <input id="email" name="email" type="email" placeholder="you@example.com" autocomplete="email" />
+              <span class="input-icon" aria-hidden="true">✉️</span>
+            </div>
+          </div>
+
+          <div class="field">
+            <label for="phone">Phone</label>
+            <div class="input-wrap">
+              <input id="phone" name="phone" type="tel" placeholder="+91 98765 43210" autocomplete="tel" />
+              <span class="input-icon" aria-hidden="true">📱</span>
+            </div>
+          </div>
+
+          <button id="submitBtn" class="btn-submit" type="submit">
+            <span>Continue to My Alerts</span>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M5 12h14M13 6l6 6-6 6"/>
+            </svg>
+          </button>
+
+          <div id="status" class="status" role="status" aria-live="polite"></div>
+        </form>
+
+        <p class="footnote" style="margin-top: 14px;">
+          Instant setup. Your personalized memory alerts will be saved automatically in your browser.
+        </p>
+      </div>
+    </section>
+  </main>
+
+  <div class="petals" id="petals" aria-hidden="true"></div>
+
+  <script>
+    // ===== Config =====
+    // Paste your deployed Apps Script Web app URL here (ends in /exec).
+    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbw85GPRoIs8c8_-gGI7yr82w70brLQWSClR6qYLuyMR8I3bSITnlB-nkFz426ymF9bvmA/exec";
+
+    const form = document.getElementById("signinForm");
+    const nameInput = document.getElementById("name");
+    const emailInput = document.getElementById("email");
+    const phoneInput = document.getElementById("phone");
+    const submitBtn = document.getElementById("submitBtn");
+    const statusEl = document.getElementById("status");
+
+    function setStatus(text, kind) {
+      statusEl.textContent = text;
+      statusEl.className = "status " + (kind || "");
+    }
+
+    function showSuccess() {
+      setStatus("Saved! Your memory alerts are ready. 🌹", "ok");
+      submitBtn.disabled = false;
+      form.reset();
+    }
+
+    function showError() {
+      setStatus("Couldn't save right now. Please try again.", "err");
+      submitBtn.disabled = false;
+    }
+
+    form.addEventListener("submit", function (e) {
+      e.preventDefault();
+
+      const name = nameInput.value.trim();
+      if (!name) {
+        setStatus("Please enter your name.", "err");
+        nameInput.focus();
+        return;
+      }
+
+      submitBtn.disabled = true;
+      setStatus("Saving…", "");
+
+      const url = SCRIPT_URL + "?" + new URLSearchParams({
+        name: name,
+        email: emailInput.value.trim(),
+        phone: phoneInput.value.trim()
+      });
+
+      fetch(url, { method: "GET", mode: "no-cors" })
+        .then(() => showSuccess())
+        .catch(() => showError());
+    });
+
+    // ===== Falling petals =====
+    (function createPetals() {
+      const container = document.getElementById("petals");
+      const colors = ["#fecdd3", "#fda4af", "#f43f5e", "#fed7aa"];
+      const count = 14;
+
+      for (let i = 0; i < count; i++) {
+        const p = document.createElement("span");
+        p.className = "petal";
+        p.style.left = (Math.random() * 100) + "%";
+        p.style.background = colors[i % colors.length];
+        p.style.animationDuration = (9 + Math.random() * 8) + "s";
+        p.style.animationDelay = (-Math.random() * 15) + "s";
+        container.appendChild(p);
+      }
+    })();
+  </script>
+</body>
+</html>
